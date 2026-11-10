@@ -280,7 +280,20 @@
             bouton.textContent = "Charger";
             bouton.onclick = function () {
               if (!instanceUnity) { afficherToast("Le jeu n’est pas encore prêt."); return; }
-              instanceUnity.SendMessage("SceneDirector", "AppliquerScenario", s.id);
+              // On applique directement les réglages de la scène depuis la page :
+              // aucun besoin d'attendre que Unity ait parsé le catalogue.
+              if (BOUTIQUE && !s.gratuit && !estDebloque(s.id)) {
+                window.open(BOUTIQUE, "_blank");
+                return;
+              }
+              instanceUnity.SendMessage("SceneDirector", "AppliquerReglages", JSON.stringify({
+                decor: s.decor || "classe",
+                avatar: s.avatar || "alvine",
+                modeVue: s.modeVue || "externe",
+                scenario: s.id,
+                titre: s.nom,
+                consigne: s.consigne || ""
+              }));
               afficherToast("Scène chargée : " + s.nom);
             };
             div.appendChild(bouton);
