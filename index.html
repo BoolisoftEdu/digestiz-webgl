@@ -25,6 +25,39 @@
         border: 1px solid #2f7d68; border-radius: 10px; padding: 10px 16px;
         font: 13px/1.4 sans-serif; box-shadow: 0 4px 14px rgba(0,0,0,.3);
       }
+      #panneau-personnage {
+        position: fixed; inset: 0; z-index: 40; display: none;
+        background: rgba(8, 18, 14, .55); backdrop-filter: blur(3px);
+        align-items: center; justify-content: center; padding: 16px;
+      }
+      #panneau-personnage .cadre {
+        width: min(640px, 100%); max-height: 86vh; overflow-y: auto;
+        background: #fbfcfa; border-radius: 16px; padding: 20px;
+        box-shadow: 0 18px 50px rgba(0,0,0,.35); font: 14px/1.5 sans-serif; color: #1b2b24;
+      }
+      #panneau-personnage h2 { font-size: 18px; font-weight: 700; margin: 0 0 4px; }
+      #panneau-personnage h3 { font-size: 13px; font-weight: 700; margin: 18px 0 8px; text-transform: uppercase; letter-spacing: .06em; color: #5b6f65; }
+      #panneau-personnage input {
+        flex: 1; min-width: 0; padding: 9px 11px; border: 1px solid #cbd8d1;
+        border-radius: 9px; font: 14px/1.3 monospace; background: #fff;
+      }
+      #panneau-personnage .ligne { display: flex; align-items: center; gap: 8px; }
+      #panneau-personnage .carte-asset {
+        display: flex; align-items: center; gap: 10px; padding: 9px 11px;
+        border: 1px solid #dfe8e3; border-radius: 10px; margin-bottom: 7px; background: #fff;
+      }
+      #panneau-personnage .carte-asset .nom { flex: 1; min-width: 0; }
+      #panneau-personnage .carte-asset .nom b { display: block; font-size: 13.5px; }
+      #panneau-personnage .carte-asset .nom span { font-size: 11.5px; color: #6b7d74; }
+      #panneau-personnage button {
+        border: 0; border-radius: 8px; padding: 7px 11px; cursor: pointer;
+        font: 12.5px/1.2 sans-serif; font-weight: 600;
+      }
+      #panneau-personnage .btn-utiliser { background: #0f766e; color: #fff; }
+      #panneau-personnage .btn-acheter { background: #e8f3ef; color: #0f766e; }
+      #panneau-personnage .btn-fermer { background: #e8ece9; color: #294038; }
+      #panneau-personnage .note { font-size: 12px; color: #6b7d74; margin-top: 10px; }
+      #panneau-personnage .verrouille { background: #fff7e6; color: #8a5a00; }
     </style>
   </head>
   <body>
@@ -46,8 +79,38 @@
     <div id="barre-outils">
       <button id="bouton-recharger" type="button"
               title="Relit le content.json publié et remplace les cartes sans redémarrer le jeu">↻ Recharger le contenu</button>
+      <button id="bouton-personnage" type="button" style="margin-left:8px"
+              title="Choisir mon avatar, mon décor ou une scène préconçue">👤 Mon personnage</button>
     </div>
     <div id="toast-contenu"></div>
+
+    <div id="panneau-personnage">
+      <div class="cadre">
+        <div class="ligne" style="justify-content:space-between">
+          <div>
+            <h2>Mon personnage</h2>
+            <div style="font-size:12.5px;color:#6b7d74">Changez l’avatar, le décor ou la scène sans redémarrer le jeu.</div>
+          </div>
+          <button class="btn-fermer" id="fermer-personnage" type="button">Fermer</button>
+        </div>
+
+        <h3>Ma licence</h3>
+        <div class="ligne">
+          <input id="code-licence" type="text" placeholder="Code reçu après achat" autocomplete="off">
+          <button class="btn-utiliser" id="valider-licence" type="button">Valider</button>
+        </div>
+        <div id="etat-licence" class="note"></div>
+
+        <h3>Avatars</h3>
+        <div id="liste-avatars"></div>
+        <h3>Décors</h3>
+        <div id="liste-decors"></div>
+        <h3>Scènes préconçues</h3>
+        <div id="liste-scenes"></div>
+
+        <p class="note">Les avatars Character Creator 5 sont des AssetBundles téléchargés à la demande : seuls les contenus déverrouillés sont chargés.</p>
+      </div>
+    </div>
 
     <script>
       var BASE = "https://lwpqnihwyjdfrdtvnxdl.supabase.co/storage/v1/object/public/medias/webgl/";
@@ -101,6 +164,152 @@
         } catch (e) { /* réseau indisponible : nouvel essai au prochain tour */ }
       }
       setInterval(verifierPublication, 45000);
+
+      // ---------------------------------------------------------- CATALOGUE PREMIUM
+      var API = "https://lwpqnihwyjdfrdtvnxdl.supabase.co";
+      var CLE_PUBLIQUE = "sb_publishable_8tWmx-Khw_CtRDLHcD5zHA_JBw16EEK";
+      var BOUTIQUE = "";
+      var catalogueJeu = { avatars: [], decors: [], scenes: [] };
+      var assetsDebloques = [];
+
+      async function chargerCatalogue() {
+        try {
+          var r = await fetch(URL_CONTENU, { cache: "no-store" });
+          if (!r.ok) return;
+          var j = await r.json();
+          if (j.catalogue) catalogueJeu = j.catalogue;
+          rendreCatalogue();
+        } catch (e) { /* catalogue indisponible : on garde les valeurs par défaut */ }
+      }
+
+      async function verifierCode(code) {
+        var zone = document.getElementById("etat-licence");
+        if (!code) { zone.textContent = "Saisissez un code."; return; }
+        zone.textContent = "Vérification…";
+        try {
+          var r = await fetch(API + "/rest/v1/rpc/verifier_licence", {
+            method: "POST",
+            headers: { apikey: CLE_PUBLIQUE, "Content-Type": "application/json" },
+            body: JSON.stringify({ code_saisi: code })
+          });
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          var liste = await r.json();
+          assetsDebloques = liste || [];
+          localStorage.setItem("digestiz.licence", code);
+          zone.textContent = assetsDebloques.length
+            ? "Licence valide : " + assetsDebloques.length + " contenu(s) déverrouillé(s)."
+            : "Code inconnu ou expiré.";
+          rendreCatalogue();
+        } catch (e) {
+          zone.textContent = "Impossible de vérifier le code : " + e.message;
+        }
+      }
+
+      function estDebloque(id) {
+        return assetsDebloques.some(function (a) { return a.asset_id === id; });
+      }
+
+      function carteAsset(a, categorie) {
+        var gratuit = !!a.gratuit;
+        var ouvert = gratuit || estDebloque(a.id);
+        var div = document.createElement("div");
+        div.className = "carte-asset";
+        var nom = document.createElement("div");
+        nom.className = "nom";
+        var b = document.createElement("b");
+        b.textContent = a.nom;
+        var s = document.createElement("span");
+        s.textContent = a.description || (a.bundle ? "AssetBundle Character Creator" : "Variante intégrée au build");
+        nom.appendChild(b); nom.appendChild(s);
+        div.appendChild(nom);
+
+        var etiquette = document.createElement("span");
+        etiquette.className = ouvert ? "" : "verrouille";
+        etiquette.style.cssText = "font-size:11.5px;padding:4px 8px;border-radius:7px;" + (ouvert ? "color:#0f766e" : "padding:4px 8px");
+        etiquette.textContent = ouvert ? (gratuit ? "Inclus" : "Déverrouillé") : ((a.prix / 100).toFixed(2).replace(".", ",") + " €");
+        div.appendChild(etiquette);
+
+        var bouton = document.createElement("button");
+        if (ouvert) {
+          bouton.className = "btn-utiliser";
+          bouton.textContent = "Utiliser";
+          bouton.onclick = function () { utiliserAsset(a, categorie); };
+        } else {
+          bouton.className = "btn-acheter";
+          bouton.textContent = "Acheter";
+          bouton.onclick = function () {
+            if (BOUTIQUE) window.open(BOUTIQUE, "_blank");
+            else afficherToast("Boutique en cours d’ouverture : demandez votre code à l’établissement.");
+          };
+        }
+        div.appendChild(bouton);
+        return div;
+      }
+
+      function utiliserAsset(a, categorie) {
+        if (!instanceUnity) { afficherToast("Le jeu n’est pas encore prêt."); return; }
+        if (a.bundle) {
+          instanceUnity.SendMessage("SceneDirector", categorie === "avatar" ? "ChargerAvatar" : "ChargerDecor", a.id);
+        } else {
+          instanceUnity.SendMessage("SceneDirector", categorie === "avatar" ? "AppliquerAvatar" : "AppliquerDecor", a.id);
+        }
+        afficherToast(categorie === "avatar" ? "Avatar appliqué : " + a.nom : "Décor appliqué : " + a.nom);
+      }
+
+      function rendreCatalogue() {
+        var zoneA = document.getElementById("liste-avatars");
+        var zoneD = document.getElementById("liste-decors");
+        var zoneS = document.getElementById("liste-scenes");
+        zoneA.innerHTML = ""; zoneD.innerHTML = ""; zoneS.innerHTML = "";
+
+        (catalogueJeu.avatars || []).filter(function (a) { return a.actif; })
+          .forEach(function (a) { zoneA.appendChild(carteAsset(a, "avatar")); });
+        (catalogueJeu.decors || []).filter(function (a) { return a.actif; })
+          .forEach(function (a) { zoneD.appendChild(carteAsset(a, "decor")); });
+        (catalogueJeu.scenes || []).filter(function (s) { return s.actif; })
+          .forEach(function (s) {
+            var div = document.createElement("div");
+            div.className = "carte-asset";
+            var nom = document.createElement("div");
+            nom.className = "nom";
+            var b = document.createElement("b"); b.textContent = s.nom;
+            var d = document.createElement("span"); d.textContent = s.description || s.consigne || "";
+            nom.appendChild(b); nom.appendChild(d); div.appendChild(nom);
+            var bouton = document.createElement("button");
+            bouton.className = "btn-utiliser";
+            bouton.textContent = "Charger";
+            bouton.onclick = function () {
+              if (!instanceUnity) { afficherToast("Le jeu n’est pas encore prêt."); return; }
+              instanceUnity.SendMessage("SceneDirector", "AppliquerScenario", s.id);
+              afficherToast("Scène chargée : " + s.nom);
+            };
+            div.appendChild(bouton);
+            zoneS.appendChild(div);
+          });
+
+        if (!zoneA.children.length) zoneA.innerHTML = '<div class="note">Aucun avatar publié.</div>';
+        if (!zoneD.children.length) zoneD.innerHTML = '<div class="note">Aucun décor publié.</div>';
+        if (!zoneS.children.length) zoneS.innerHTML = '<div class="note">Aucune scène publiée.</div>';
+      }
+
+      document.getElementById("bouton-personnage").onclick = function () {
+        document.getElementById("panneau-personnage").style.display = "flex";
+      };
+      document.getElementById("fermer-personnage").onclick = function () {
+        document.getElementById("panneau-personnage").style.display = "none";
+      };
+      document.getElementById("panneau-personnage").onclick = function (e) {
+        if (e.target === this) this.style.display = "none";
+      };
+      document.getElementById("valider-licence").onclick = function () {
+        void verifierCode(document.getElementById("code-licence").value.trim().toUpperCase());
+      };
+      void chargerCatalogue();
+      var codeSauve = localStorage.getItem("digestiz.licence");
+      if (codeSauve) {
+        document.getElementById("code-licence").value = codeSauve;
+        void verifierCode(codeSauve);
+      }
 
       function unityShowBanner(msg, type) {
         var zone = document.querySelector("#unity-warning");
