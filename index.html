@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigestiZ — La digestion en 3D</title>
+    <link rel="shortcut icon" href="https://lwpqnihwyjdfrdtvnxdl.supabase.co/storage/v1/object/public/medias/webgl/TemplateData/favicon.ico">
+    <link rel="stylesheet" href="https://lwpqnihwyjdfrdtvnxdl.supabase.co/storage/v1/object/public/medias/webgl/TemplateData/style.css">
+    <style>
+      #texte-chargement { color: #fff; text-align: center; font: 13px/1.5 sans-serif; margin-top: 10px; }
+      #unity-warning { position: absolute; left: 50%; top: 8px; transform: translateX(-50%); z-index: 10; }
+    </style>
+  </head>
+  <body>
+    <div id="unity-container" class="unity-desktop">
+      <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
+      <div id="unity-loading-bar">
+        <div id="unity-logo"></div>
+        <div id="unity-progress-bar-empty"><div id="unity-progress-bar-full"></div></div>
+        <div id="texte-chargement">Préparation du jeu…</div>
+      </div>
+      <div id="unity-warning"></div>
+      <div id="unity-footer">
+        <div id="unity-logo-title-footer"></div>
+        <div id="unity-fullscreen-button"></div>
+        <div id="unity-build-title">DigestiZ</div>
+      </div>
+    </div>
+
+    <script>
+      var BASE = "https://lwpqnihwyjdfrdtvnxdl.supabase.co/storage/v1/object/public/medias/webgl/";
+      var BUILD = BASE + "Build/";
+      var MORCEAUX = [
+    "https://lwpqnihwyjdfrdtvnxdl.supabase.co/storage/v1/object/public/medias/webgl/Build/donnees/part-00.bin",
+    "https://lwpqnihwyjdfrdtvnxdl.supabase.co/storage/v1/object/public/medias/webgl/Build/donnees/part-01.bin",
+    "https://lwpqnihwyjdfrdtvnxdl.supabase.co/storage/v1/object/public/medias/webgl/Build/donnees/part-02.bin",
+      ];
+      var canvas = document.querySelector("#unity-canvas");
+      var texte = document.querySelector("#texte-chargement");
+
+      function unityShowBanner(msg, type) {
+        var zone = document.querySelector("#unity-warning");
+        var div = document.createElement("div");
+        div.innerHTML = msg;
+        zone.appendChild(div);
+        if (type === "error") div.style = "background:red;padding:10px;color:#fff;";
+        else {
+          div.style = "background:#ffd;padding:10px;color:#000;";
+          setTimeout(function () { zone.removeChild(div); }, 5000);
+        }
+      }
+
+      // Le fichier de données dépasse les limites d'hébergement : il est
+      // servi en morceaux, réassemblés ici en un Blob local.
+      async function preparerDonnees() {
+        var parties = [];
+        for (var i = 0; i < MORCEAUX.length; i++) {
+          var r = await fetch(MORCEAUX[i]);
+          if (!r.ok) throw new Error("Morceau " + (i + 1) + " indisponible (HTTP " + r.status + ")");
+          parties.push(new Uint8Array(await r.arrayBuffer()));
+          texte.textContent = "Chargement des données : " + Math.round(100 * (i + 1) / MORCEAUX.length) + " %";
+        }
+        var total = parties.reduce(function (s, p) { return s + p.length; }, 0);
+        var tout = new Uint8Array(total);
+        var o = 0;
+        for (var j = 0; j < parties.length; j++) { tout.set(parties[j], o); o += parties[j].length; }
+        return URL.createObjectURL(new Blob([tout]));
+      }
+
+      var config = {
+        dataUrl: null, // renseigné avant createUnityInstance
+        frameworkUrl: BUILD + "Build-Nouveau.framework.js.unityweb",
+        codeUrl: BUILD + "Build-Nouveau.wasm.unityweb",
+        streamingAssetsUrl: BASE + "StreamingAssets",
+        companyName: "DefaultCompany",
+        productName: "DigestiZ",
+        productVersion: "0.1.0",
+        showBanner: unityShowBanner,
+      };
+
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        var meta = document.createElement("meta");
+        meta.name = "viewport";
+        meta.content = "width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes";
+        document.head.appendChild(meta);
+        document.querySelector("#unity-container").className = "unity-mobile";
+        canvas.className = "unity-mobile";
+      } else {
+        canvas.style.width = "960px";
+        canvas.style.height = "600px";
+      }
+
+      document.querySelector("#unity-loading-bar").style.display = "block";
+
+      var script = document.createElement("script");
+      script.src = BUILD + "Build-Nouveau.loader.js";
+      script.onload = async function () {
+        try {
+          texte.textContent = "Chargement des données : 0 %";
+          config.dataUrl = await preparerDonnees();
+          texte.textContent = "Démarrage du moteur…";
+          createUnityInstance(canvas, config, function (p) {
+            document.querySelector("#unity-progress-bar-full").style.width = (100 * p) + "%";
+          }).then(function (instance) {
+            document.querySelector("#unity-loading-bar").style.display = "none";
+            document.querySelector("#unity-fullscreen-button").onclick = function () {
+              instance.SetFullscreen(1);
+            };
+          }).catch(function (message) { unityShowBanner(String(message), "error"); });
+        } catch (e) {
+          unityShowBanner("Impossible de charger le jeu : " + e.message, "error");
+        }
+      };
+      script.onerror = function () { unityShowBanner("Loader Unity introuvable.", "error"); };
+      document.body.appendChild(script);
+    </script>
+  </body>
+</html>
