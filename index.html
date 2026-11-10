@@ -12,6 +12,19 @@
       /* Le canvas reste lisible même dans une fenêtre étroite. */
       #unity-container { max-width: 100%; }
       #unity-canvas { max-width: 100% !important; height: auto !important; aspect-ratio: 8 / 5; }
+      #barre-outils { position: fixed; top: 10px; left: 10px; z-index: 20; display: none; }
+      #barre-outils button {
+        background: #0f766e; color: #fff; border: 0; border-radius: 8px;
+        padding: 8px 12px; font: 13px/1.2 sans-serif; cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0,0,0,.25);
+      }
+      #barre-outils button:hover { background: #115e59; }
+      #toast-contenu {
+        position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+        z-index: 20; display: none; background: #10241f; color: #d7f5e9;
+        border: 1px solid #2f7d68; border-radius: 10px; padding: 10px 16px;
+        font: 13px/1.4 sans-serif; box-shadow: 0 4px 14px rgba(0,0,0,.3);
+      }
     </style>
   </head>
   <body>
@@ -30,8 +43,15 @@
       </div>
     </div>
 
+    <div id="barre-outils">
+      <button id="bouton-recharger" type="button"
+              title="Relit le content.json publié et remplace les cartes sans redémarrer le jeu">↻ Recharger le contenu</button>
+    </div>
+    <div id="toast-contenu"></div>
+
     <script>
       var BASE = "https://lwpqnihwyjdfrdtvnxdl.supabase.co/storage/v1/object/public/medias/webgl/";
+      var URL_CONTENU = "https://lwpqnihwyjdfrdtvnxdl.supabase.co/storage/v1/object/public/medias/contenu/content.json";
       var BUILD = BASE + "Build/";
       var MORCEAUX = [
     "https://lwpqnihwyjdfrdtvnxdl.supabase.co/storage/v1/object/public/medias/webgl/Build/donnees/part-00.bin",
@@ -40,6 +60,47 @@
       ];
       var canvas = document.querySelector("#unity-canvas");
       var texte = document.querySelector("#texte-chargement");
+      var instanceUnity = null;
+      var derniereVersion = null;
+      var delaiToast = null;
+
+      function afficherToast(message) {
+        var t = document.querySelector("#toast-contenu");
+        t.textContent = message;
+        t.style.display = "block";
+        if (delaiToast) clearTimeout(delaiToast);
+        delaiToast = setTimeout(function () { t.style.display = "none"; }, 4000);
+      }
+
+      // ContenuLoader.Recharger() est une méthode publique : Unity SendMessage
+      // permet de la rappeler sans reconstruire le build. Les gestionnaires
+      // RemplacerContenu / RemplacerClasses sont prévus pour un échange à chaud.
+      function rechargerContenu(message) {
+        if (!instanceUnity) { afficherToast("Le jeu n'est pas encore prêt."); return; }
+        instanceUnity.SendMessage("ContenuLoader", "Recharger");
+        afficherToast(message || "Contenu rechargé.");
+      }
+
+      document.querySelector("#bouton-recharger").onclick = function () {
+        rechargerContenu("Rechargement du contenu…");
+      };
+
+      // Détection automatique d'une nouvelle publication : dès que l'admin
+      // publie une version, le jeu en cours de route l'applique (≈ 45 s).
+      async function verifierPublication() {
+        if (document.visibilityState !== "visible" || !instanceUnity) return;
+        try {
+          var r = await fetch(URL_CONTENU, { cache: "no-store" });
+          if (!r.ok) return;
+          var j = await r.json();
+          if (derniereVersion === null) { derniereVersion = j.version; return; }
+          if (j.version !== derniereVersion) {
+            derniereVersion = j.version;
+            rechargerContenu("Nouveau contenu publié (v" + j.version + ") appliqué.");
+          }
+        } catch (e) { /* réseau indisponible : nouvel essai au prochain tour */ }
+      }
+      setInterval(verifierPublication, 45000);
 
       function unityShowBanner(msg, type) {
         var zone = document.querySelector("#unity-warning");
@@ -105,6 +166,8 @@
           createUnityInstance(canvas, config, function (p) {
             document.querySelector("#unity-progress-bar-full").style.width = (100 * p) + "%";
           }).then(function (instance) {
+            instanceUnity = instance;
+            document.querySelector("#barre-outils").style.display = "block";
             document.querySelector("#unity-loading-bar").style.display = "none";
             document.querySelector("#unity-fullscreen-button").onclick = function () {
               instance.SetFullscreen(1);
