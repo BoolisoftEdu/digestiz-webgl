@@ -58,6 +58,89 @@
       #panneau-personnage .btn-fermer { background: #e8ece9; color: #294038; }
       #panneau-personnage .note { font-size: 12px; color: #6b7d74; margin-top: 10px; }
       #panneau-personnage .verrouille { background: #fff7e6; color: #8a5a00; }
+
+      /* ---- Boutique + launcher Windows 10 (Fluent / acrylic) ---- */
+      #btn-boutique { background: #0078d4; color: #fff; }
+      #btn-launcher { background: #2d2d2d; color: #fff; }
+      .w10 {
+        position: fixed; inset: 0; z-index: 60; display: none;
+        font: 14px/1.45 "Segoe UI", system-ui, sans-serif; color: #f3f3f3;
+        background: linear-gradient(135deg, rgba(10,20,35,.92), rgba(16,28,48,.94));
+        backdrop-filter: blur(18px) saturate(140%);
+      }
+      .w10 .barre {
+        display: flex; align-items: center; gap: 14px; padding: 14px 26px;
+        border-bottom: 1px solid rgba(255,255,255,.09);
+      }
+      .w10 .barre h1 { font-size: 19px; font-weight: 600; margin: 0; flex: 1; letter-spacing: .2px; }
+      .w10 .barre .fermer {
+        background: rgba(255,255,255,.09); border: 0; color: #fff; border-radius: 6px;
+        padding: 8px 14px; cursor: pointer; font-size: 13px;
+      }
+      .w10 .corps { max-width: 1080px; margin: 0 auto; padding: 22px 26px 40px; overflow-y: auto; height: calc(100% - 62px); }
+      .w10 h2 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; color: #8fb8e8; margin: 22px 0 12px; }
+      .w10 .grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 10px; }
+      .w10 .tuile {
+        position: relative; min-height: 132px; padding: 14px; border-radius: 4px;
+        background: rgba(255,255,255,.055); border: 1px solid rgba(255,255,255,.08);
+        cursor: pointer; transition: transform .14s ease, background .14s ease, box-shadow .14s ease;
+        display: flex; flex-direction: column; justify-content: space-between; overflow: hidden;
+      }
+      .w10 .tuile:hover { transform: translateY(-3px); background: rgba(0,120,212,.28); box-shadow: 0 10px 24px rgba(0,0,0,.35); }
+      .w10 .tuile .icone { font-size: 30px; line-height: 1; }
+      .w10 .tuile .nom { font-size: 13.5px; font-weight: 600; margin-top: 8px; }
+      .w10 .tuile .sous { font-size: 11px; color: #a9bcd4; margin-top: 3px; }
+      .w10 .tuile .badge {
+        position: absolute; top: 10px; right: 10px; font-size: 9.5px; letter-spacing: .06em;
+        text-transform: uppercase; padding: 3px 7px; border-radius: 3px; font-weight: 700;
+      }
+      .w10 .badge-inclus { background: #107c41; color: #fff; }
+      .w10 .badge-achete { background: #0078d4; color: #fff; }
+      .w10 .badge-essai { background: #8a5a00; color: #fff; }
+      .w10 .badge-unreal { background: #313131; color: #fff; }
+      .w10 .licence-bar {
+        display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+        background: rgba(0,0,0,.28); padding: 12px 14px; border-radius: 6px; margin-bottom: 8px;
+      }
+      .w10 .licence-bar input {
+        flex: 1; min-width: 190px; background: rgba(255,255,255,.1); color: #fff;
+        border: 1px solid rgba(255,255,255,.18); border-radius: 4px; padding: 9px 11px;
+        font: 13px monospace; outline: none;
+      }
+      .w10 .licence-bar button { background: #0078d4; color: #fff; border: 0; border-radius: 4px; padding: 9px 14px; cursor: pointer; font-size: 13px; }
+      .w10 .licence-etat { font-size: 12px; color: #a9bcd4; margin-top: 8px; }
+
+      /* Aperçu produit (vidéo + explication + essai + achat) */
+      #apercu { position: fixed; inset: 0; z-index: 70; display: none; align-items: center; justify-content: center; padding: 18px; background: rgba(0,0,0,.65); }
+      #apercu .cadre {
+        width: min(760px, 100%); max-height: 88vh; overflow-y: auto; border-radius: 8px;
+        background: #f7f8fa; color: #1b2b24; padding: 22px; box-shadow: 0 22px 60px rgba(0,0,0,.5);
+        font: 14px/1.55 "Segoe UI", system-ui, sans-serif;
+      }
+      #apercu h2 { margin: 0 0 6px; font-size: 20px; }
+      #apercu video { width: 100%; max-height: 300px; background: #000; border-radius: 6px; margin: 12px 0; }
+      #apercu .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+      #apercu button { border: 0; border-radius: 6px; padding: 10px 16px; cursor: pointer; font-size: 13.5px; font-weight: 600; }
+      #apercu .btn-essai { background: #0078d4; color: #fff; }
+      #apercu .btn-achat { background: #107c41; color: #fff; }
+      #apercu .btn-fermer { background: #e4e7ea; color: #333; }
+
+      /* Compte à rebours d'essai */
+      #essai-bande {
+        position: fixed; top: 0; left: 0; right: 0; z-index: 80; display: none;
+        background: #0078d4; color: #fff; padding: 9px 16px; font: 13px "Segoe UI", sans-serif;
+        align-items: center; gap: 14px; box-shadow: 0 3px 12px rgba(0,0,0,.3);
+      }
+      #essai-bande strong { font-variant-numeric: tabular-nums; font-size: 15px; }
+      #essai-bande button { margin-left: auto; background: #fff; color: #0078d4; border: 0; border-radius: 4px; padding: 6px 12px; cursor: pointer; font-weight: 600; }
+
+      /* Scène externe (Unreal 5.9 Wasm / Pixel Streaming) */
+      #cadre-externe { position: fixed; inset: 0; z-index: 50; display: none; background: #0b0b0d; flex-direction: column; }
+      #cadre-externe .entete { display: flex; align-items: center; gap: 12px; padding: 9px 14px; background: #16181c; color: #fff; font: 13px "Segoe UI", sans-serif; }
+      #cadre-externe .entete button { background: #0078d4; color: #fff; border: 0; border-radius: 4px; padding: 7px 13px; cursor: pointer; }
+      #cadre-externe iframe { flex: 1; width: 100%; border: 0; }
+      #cadre-externe .desktop { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; color: #fff; text-align: center; padding: 30px; }
+      #cadre-externe .desktop a { background: #0078d4; color: #fff; padding: 12px 22px; border-radius: 6px; text-decoration: none; font-weight: 600; }
     </style>
   </head>
   <body>
@@ -81,8 +164,76 @@
               title="Relit le content.json publié et remplace les cartes sans redémarrer le jeu">↻ Recharger le contenu</button>
       <button id="bouton-personnage" type="button" style="margin-left:8px"
               title="Choisir mon avatar, mon décor ou une scène préconçue">👤 Mon personnage</button>
+      <button id="btn-boutique" type="button" style="margin-left:8px">🛍 Boutique</button>
+      <button id="btn-launcher" type="button" style="margin-left:8px">▦ Mes supports</button>
     </div>
     <div id="toast-contenu"></div>
+
+    <!-- Boutique + menu au choix style Windows 10 -->
+    <div class="w10" id="launcher">
+      <div class="barre">
+        <span style="font-size:22px">▦</span>
+        <h1>Mes supports &amp; scènes</h1>
+        <button class="fermer" id="launcher-fermer" type="button">Fermer</button>
+      </div>
+      <div class="corps">
+        <div class="licence-bar">
+          <input id="code-licence-2" type="text" placeholder="Code de licence (abonnement 1 an)" autocomplete="off">
+          <button id="valider-licence-2" type="button">Activer</button>
+          <button id="ouvrir-boutique" type="button" style="background:#107c41">🛍 Boutique</button>
+        </div>
+        <div class="licence-etat" id="etat-licence-2"></div>
+        <h2>Supports</h2><div class="grille" id="grille-supports"></div>
+        <h2>Scènes</h2><div class="grille" id="grille-scenes"></div>
+        <h2>Avatars &amp; décors</h2><div class="grille" id="grille-avatars"></div>
+      </div>
+    </div>
+
+    <div class="w10" id="boutique" style="display:none">
+      <div class="barre">
+        <span style="font-size:22px">🛍</span>
+        <h1>Boutique DigestiZ</h1>
+        <button class="fermer" id="boutique-fermer" type="button">Fermer</button>
+      </div>
+      <div class="corps">
+        <div class="licence-etat" style="margin-bottom:14px">Chaque achat donne droit à une licence d’utilisation d’un an. Prévisualisez, testez 1 minute, puis achetez.</div>
+        <div class="grille" id="grille-boutique"></div>
+      </div>
+    </div>
+
+    <div id="apercu">
+      <div class="cadre">
+        <h2 id="apercu-titre"></h2>
+        <div id="apercu-description" style="font-size:13px;color:#5b6f65"></div>
+        <video id="apercu-video" controls playsinline style="display:none"></video>
+        <div id="apercu-explication" style="margin-top:12px"></div>
+        <div class="actions">
+          <button class="btn-essai" id="apercu-essai" type="button">▶ Tester 1 min</button>
+          <button class="btn-achat" id="apercu-achat" type="button">Acheter</button>
+          <button class="btn-fermer" id="apercu-fermer" type="button">Fermer</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="essai-bande">
+      <span>Essai en cours —</span><strong id="essai-chrono">1:00</strong>
+      <span id="essai-nom"></span>
+      <button id="essai-acheter" type="button">Acheter maintenant</button>
+      <button id="essai-stop" type="button">Terminer</button>
+    </div>
+
+    <div id="cadre-externe">
+      <div class="entete">
+        <button id="externe-retour" type="button">← Retour à DigestiZ</button>
+        <span id="externe-titre"></span>
+      </div>
+      <iframe id="externe-iframe" allow="autoplay; fullscreen; gamepad; xr-spatial-tracking" style="display:none"></iframe>
+      <div class="desktop" id="externe-desktop" style="display:none">
+        <h2>Version desktop</h2>
+        <p>Cette scène s’installe sur ordinateur. Votre licence d’un an sera vérifiée au lancement.</p>
+        <a id="externe-lien" href="#" target="_blank" rel="noopener">Télécharger</a>
+      </div>
+    </div>
 
     <div id="panneau-personnage">
       <div class="cadre">
@@ -107,8 +258,10 @@
         <div id="liste-decors"></div>
         <h3>Scènes préconçues</h3>
         <div id="liste-scenes"></div>
+        <h3>Animations de démonstration</h3>
+        <div id="liste-animations"></div>
 
-        <p class="note">Les avatars Character Creator 5 sont des AssetBundles téléchargés à la demande : seuls les contenus déverrouillés sont chargés.</p>
+        <p class="note">Les avatars Character Creator 5 sont des AssetBundles téléchargés à la demande : seuls les contenus déverrouillés sont chargés. Les animations pilotent les séquences existantes de l’appareil digestif.</p>
       </div>
     </div>
 
@@ -159,7 +312,12 @@
           if (derniereVersion === null) { derniereVersion = j.version; return; }
           if (j.version !== derniereVersion) {
             derniereVersion = j.version;
-            rechargerContenu("Nouveau contenu publié (v" + j.version + ") appliqué.");
+            // Le rechargement est désormais fait côté Unity (ContenuLoader) :
+            // on rafraîchit seulement le catalogue affiché dans cette page.
+            catalogueJeu = j.catalogue || catalogueJeu;
+            rendreCatalogue();
+            chargerBoutique();
+            afficherToast("Nouveau contenu publié (v" + j.version + ") — le jeu se met à jour.");
           }
         } catch (e) { /* réseau indisponible : nouvel essai au prochain tour */ }
       }
@@ -171,14 +329,31 @@
       var BOUTIQUE = "";
       var catalogueJeu = { avatars: [], decors: [], scenes: [] };
       var assetsDebloques = [];
+      var ANIMATIONS = [
+        { id: "repos", nom: "Repos", description: "Posture neutre de l’avatar." },
+        { id: "manger", nom: "Mastication", description: "Animation « Manger » de l’avatar CC5." },
+        { id: "xray", nom: "Vue rayons X", description: "État « xray » de l’avatar." },
+        { id: "parcours", nom: "Parcours digestif complet", description: "Trajet des aliments dans tout le tube digestif." },
+        { id: "segment", nom: "Segment seul", description: "Joue le segment d’organe courant." },
+        { id: "bouche", nom: "Focus bouche", description: "Rapproche la caméra de la bouche." },
+        { id: "estomac", nom: "Focus estomac", description: "Rapproche la caméra de l’estomac." },
+        { id: "intestin", nom: "Focus intestin grêle", description: "Rapproche la caméra de l’intestin grêle." },
+        { id: "mini-camera", nom: "Mini-caméra interne", description: "Active la caméra miniature." },
+        { id: "isole", nom: "Organe isolé", description: "Isole l’organe courant." },
+        { id: "retour", nom: "Retour vue externe", description: "Réinitialise caméra et organe." }
+      ];
 
       async function chargerCatalogue() {
         try {
-          var r = await fetch(URL_CONTENU, { cache: "no-store" });
+          // Cache-buster : le CDN (max-age=60) peut sinon servir un ancien
+          // content.json et afficher un catalogue vide dans le panneau.
+          var r = await fetch(URL_CONTENU + "?v=" + Date.now(), { cache: "no-store" });
           if (!r.ok) return;
           var j = await r.json();
           if (j.catalogue) catalogueJeu = j.catalogue;
+          derniereVersion = j.version ?? derniereVersion;
           rendreCatalogue();
+          chargerBoutique();
         } catch (e) { /* catalogue indisponible : on garde les valeurs par défaut */ }
       }
 
@@ -196,10 +371,15 @@
           var liste = await r.json();
           assetsDebloques = liste || [];
           localStorage.setItem("digestiz.licence", code);
-          zone.textContent = assetsDebloques.length
+          var message = assetsDebloques.length
             ? "Licence valide : " + assetsDebloques.length + " contenu(s) déverrouillé(s)."
             : "Code inconnu ou expiré.";
+          zone.textContent = message;
+          document.getElementById("etat-licence-2").textContent = message +
+            (assetsDebloques[0] && assetsDebloques[0].expire_le
+              ? " · Expire le " + new Date(assetsDebloques[0].expire_le).toLocaleDateString("fr-FR") : "");
           rendreCatalogue();
+          chargerBoutique();
         } catch (e) {
           zone.textContent = "Impossible de vérifier le code : " + e.message;
         }
@@ -290,6 +470,7 @@
                 decor: s.decor || "classe",
                 avatar: s.avatar || "alvine",
                 modeVue: s.modeVue || "externe",
+                animation: s.animation || "repos",
                 scenario: s.id,
                 titre: s.nom,
                 consigne: s.consigne || ""
@@ -300,10 +481,253 @@
             zoneS.appendChild(div);
           });
 
+        var zoneAnim = document.getElementById("liste-animations");
+        zoneAnim.innerHTML = "";
+        ANIMATIONS.forEach(function (a) {
+          var div = document.createElement("div");
+          div.className = "carte-asset";
+          var nom = document.createElement("div");
+          nom.className = "nom";
+          var b = document.createElement("b"); b.textContent = a.nom;
+          var d = document.createElement("span"); d.textContent = a.description;
+          nom.appendChild(b); nom.appendChild(d); div.appendChild(nom);
+          var bouton = document.createElement("button");
+          bouton.className = "btn-utiliser";
+          bouton.textContent = "Jouer";
+          bouton.onclick = function () {
+            if (!instanceUnity) { afficherToast("Le jeu n’est pas encore prêt."); return; }
+            instanceUnity.SendMessage("SceneDirector", "JouerAnimation", a.id);
+            afficherToast("Animation : " + a.nom);
+          };
+          div.appendChild(bouton);
+          zoneAnim.appendChild(div);
+        });
+
         if (!zoneA.children.length) zoneA.innerHTML = '<div class="note">Aucun avatar publié.</div>';
         if (!zoneD.children.length) zoneD.innerHTML = '<div class="note">Aucun décor publié.</div>';
         if (!zoneS.children.length) zoneS.innerHTML = '<div class="note">Aucune scène publiée.</div>';
       }
+
+      // ---------------------------------------------------------- BOUTIQUE / LAUNCHER
+      var produitsBoutique = [];
+      var supportsBoutique = [];
+      var configBoutique = { publishableKey: "", liensPaiement: { avatar: "", scene: "", support: "" }, mode: "test" };
+      var essaiTimer = null;
+      var essaiProduit = null;
+
+      function chargerBoutique() {
+        var cat = catalogueJeu || {};
+        produitsBoutique = cat.produits || [];
+        supportsBoutique = cat.supports || [];
+        if (cat.boutique) configBoutique = cat.boutique;
+        rendreLauncher();
+        rendreBoutique();
+      }
+
+      function estPossede(id) {
+        if (assetsDebloques.some(function (a) { return a.asset_id === id; })) return true;
+        var p = produitsBoutique.find(function (x) { return x.id === id; });
+        return !!(p && p.gratuit);
+      }
+
+      function licencePour(id) {
+        return assetsDebloques.find(function (a) { return a.asset_id === id; });
+      }
+
+      function iconeProduit(p) {
+        if (p.type === "support") return "▦";
+        if (p.type === "scene") return "🎬";
+        if (p.type === "decor") return "🏞";
+        return "👤";
+      }
+
+      function euros(centimes) {
+        return ((centimes || 0) / 100).toFixed(2).replace(".", ",") + " €";
+      }
+
+      function tuile(p, possede, onClick) {
+        var d = document.createElement("div");
+        d.className = "tuile";
+        var badge = document.createElement("span");
+        badge.className = "badge " + (possede ? "badge-achete" : "badge-essai");
+        badge.textContent = possede ? (p.gratuit ? "Inclus" : "Licence") : (p.moteur === "unreal" ? "Unreal" : "Aperçu");
+        if (p.moteur === "unreal" && !possede) badge.className = "badge badge-unreal";
+        d.appendChild(badge);
+        var i = document.createElement("div"); i.className = "icone"; i.textContent = iconeProduit(p); d.appendChild(i);
+        var n = document.createElement("div"); n.className = "nom"; n.textContent = p.nom; d.appendChild(n);
+        var s = document.createElement("div");
+        s.className = "sous";
+        var lic = licencePour(p.id);
+        s.textContent = possede && lic && lic.expire_le
+          ? "Valable jusqu’au " + new Date(lic.expire_le).toLocaleDateString("fr-FR")
+          : (possede ? "Disponible" : (p.gratuit ? "Gratuit" : euros(p.prix) + " / an"));
+        d.appendChild(s);
+        d.onclick = function () { onClick(p); };
+        return d;
+      }
+
+      function ouvrirApercu(p) {
+        document.getElementById("apercu-titre").textContent = p.nom;
+        document.getElementById("apercu-description").textContent = p.description || "";
+        document.getElementById("apercu-explication").textContent = p.explication || "Aucune description détaillée pour le moment.";
+        var v = document.getElementById("apercu-video");
+        if (p.videoUrl) { v.src = p.videoUrl; v.style.display = "block"; } else { v.removeAttribute("src"); v.style.display = "none"; }
+        var achat = document.getElementById("apercu-achat");
+        achat.textContent = p.gratuit ? "Ajouter" : "Acheter " + euros(p.prix) + " / an";
+        achat.onclick = function () { acheter(p); };
+        document.getElementById("apercu-essai").onclick = function () { demarrerEssai(p); };
+        document.getElementById("essai-acheter").onclick = function () { acheter(p); };
+        essaiProduit = p;
+        document.getElementById("apercu").style.display = "flex";
+      }
+
+      function acheter(p) {
+        if (p.gratuit || estPossede(p.id)) {
+          lancerProduit(p);
+          document.getElementById("apercu").style.display = "none";
+          return;
+        }
+        var liens = configBoutique.liensPaiement || {};
+        var lien = p.type === "support" ? liens.support : (p.type === "scene" ? liens.scene : liens.avatar);
+        if (lien) window.open(lien, "_blank");
+        else afficherToast("Boutique en cours de configuration : demandez votre code de licence à l’établissement.");
+      }
+
+      /** Applique un produit acheté : Unity, ou scène externe Unreal / desktop. */
+      function lancerProduit(p) {
+        document.getElementById("boutique").style.display = "none";
+        document.getElementById("launcher").style.display = "none";
+        document.getElementById("apercu").style.display = "none";
+
+        if (p.moteur === "unreal" || p.urlBuildWeb || p.urlStream || p.lienDesktop) {
+          ouvrirExterne(p);
+          return;
+        }
+        if (!instanceUnity) { afficherToast("Le jeu n’est pas encore prêt."); return; }
+        instanceUnity.SendMessage("SceneDirector", "AppliquerProduit", JSON.stringify(p));
+        afficherToast("Chargé : " + p.nom);
+      }
+
+      function ouvrirExterne(p) {
+        var cadre = document.getElementById("cadre-externe");
+        var iframe = document.getElementById("externe-iframe");
+        var desktop = document.getElementById("externe-desktop");
+        document.getElementById("externe-titre").textContent = p.nom + (p.moteur === "unreal" ? " · Unreal Engine" : "");
+        var unite = document.getElementById("unity-container");
+        if (unite) unite.style.display = "none";
+
+        if (p.mode === "desktop" || (!p.urlBuildWeb && !p.urlStream && p.lienDesktop)) {
+          iframe.style.display = "none"; desktop.style.display = "flex";
+          document.getElementById("externe-lien").href = p.lienDesktop;
+        } else {
+          var url = p.urlBuildWeb || p.urlStream;
+          if (!url) {
+            afficherToast("Le build de cette scène n’est pas encore hébergé.");
+            if (unite) unite.style.display = "";
+            cadre.style.display = "none";
+            return;
+          }
+          desktop.style.display = "none"; iframe.style.display = "block";
+          // Le build UE 5.9 ne peut pas faire d'HTTP moteur : on passe le code
+          // de licence en query string pour vérification côté page.
+          var code = localStorage.getItem("digestiz.licence") || "";
+          iframe.src = url + (url.indexOf("?") >= 0 ? "&" : "?") + "licence=" + encodeURIComponent(code);
+        }
+        cadre.style.display = "flex";
+      }
+
+      function fermerExterne() {
+        var cadre = document.getElementById("cadre-externe");
+        cadre.style.display = "none";
+        document.getElementById("externe-iframe").removeAttribute("src");
+        var unite = document.getElementById("unity-container");
+        if (unite) unite.style.display = "";
+      }
+
+      // ---------------------------------------------------------- ESSAI 1 MIN
+      function demarrerEssai(p) {
+        document.getElementById("apercu").style.display = "none";
+        if (essaiTimer) clearInterval(essaiTimer);
+        var secondes = p.essaiSecondes > 0 ? p.essaiSecondes : 60;
+        document.getElementById("essai-nom").textContent = p.nom;
+        document.getElementById("essai-bande").style.display = "flex";
+        essaiProduit = p;
+        lancerProduit(p);
+        if (instanceUnity) instanceUnity.SendMessage("SceneDirector", "DemarrerEssai", JSON.stringify(p));
+        var restant = secondes;
+        var affiche = function () {
+          var m = Math.floor(restant / 60), s = restant % 60;
+          document.getElementById("essai-chrono").textContent = m + ":" + (s < 10 ? "0" : "") + s;
+        };
+        affiche();
+        essaiTimer = setInterval(function () {
+          restant--;
+          affiche();
+          if (restant <= 0) terminerEssai();
+        }, 1000);
+      }
+
+      function terminerEssai() {
+        if (essaiTimer) { clearInterval(essaiTimer); essaiTimer = null; }
+        document.getElementById("essai-bande").style.display = "none";
+        fermerExterne();
+        if (instanceUnity) instanceUnity.SendMessage("SceneDirector", "TerminerEssai");
+        afficherToast("Essai terminé. Achetez pour garder ce contenu.");
+        document.getElementById("boutique").style.display = "flex";
+      }
+
+      // ---------------------------------------------------------- RENDU
+      function rendreLauncher() {
+        var gs = document.getElementById("grille-supports");
+        var gc = document.getElementById("grille-scenes");
+        var ga = document.getElementById("grille-avatars");
+        gs.innerHTML = ""; gc.innerHTML = ""; ga.innerHTML = "";
+        supportsBoutique.filter(function (p) { return p.actif; }).forEach(function (p) {
+          var prod = { id: p.id, nom: p.nom, description: p.description, type: "support", gratuit: p.gratuit,
+                       prix: p.prix, moteur: p.moteur || "unity", mode: p.mode || "web",
+                       urlBuildWeb: p.urlBuildWeb || "", urlStream: p.urlStream || "", lienDesktop: p.lienDesktop || "",
+                       videoUrl: p.videoUrl || "", explication: p.explication || "", essaiSecondes: p.essaiSecondes || 60 };
+          gs.appendChild(tuile(prod, estPossede(p.id), function (x) { estPossede(x.id) ? lancerProduit(x) : ouvrirApercu(x); }));
+        });
+        produitsBoutique.filter(function (p) { return p.actif && p.type === "scene"; })
+          .forEach(function (p) { gc.appendChild(tuile(p, estPossede(p.id), function (x) { estPossede(x.id) ? lancerProduit(x) : ouvrirApercu(x); })); });
+        produitsBoutique.filter(function (p) { return p.actif && (p.type === "avatar" || p.type === "decor"); })
+          .forEach(function (p) { ga.appendChild(tuile(p, estPossede(p.id), function (x) { estPossede(x.id) ? lancerProduit(x) : ouvrirApercu(x); })); });
+        if (!gs.children.length) gs.innerHTML = '<div class="licence-etat">Aucun support publié.</div>';
+        if (!gc.children.length) gc.innerHTML = '<div class="licence-etat">Aucune scène publiée.</div>';
+        if (!ga.children.length) ga.innerHTML = '<div class="licence-etat">Aucun avatar publié.</div>';
+      }
+
+      function rendreBoutique() {
+        var g = document.getElementById("grille-boutique");
+        g.innerHTML = "";
+        produitsBoutique.filter(function (p) { return p.actif; }).forEach(function (p) {
+          g.appendChild(tuile(p, estPossede(p.id), ouvrirApercu));
+        });
+        if (!g.children.length) g.innerHTML = '<div class="licence-etat">La boutique est en cours de configuration.</div>';
+      }
+
+      document.getElementById("btn-boutique").onclick = function () { document.getElementById("boutique").style.display = "flex"; };
+      document.getElementById("btn-launcher").onclick = function () { document.getElementById("launcher").style.display = "flex"; };
+      document.getElementById("boutique-fermer").onclick = function () { document.getElementById("boutique").style.display = "none"; };
+      document.getElementById("launcher-fermer").onclick = function () { document.getElementById("launcher").style.display = "none"; };
+      document.getElementById("apercu-fermer").onclick = function () { document.getElementById("apercu").style.display = "none"; };
+      document.getElementById("ouvrir-boutique").onclick = function () { document.getElementById("boutique").style.display = "flex"; };
+      document.getElementById("externe-retour").onclick = fermerExterne;
+      document.getElementById("essai-stop").onclick = terminerEssai;
+      document.getElementById("valider-licence-2").onclick = function () {
+        var c = document.getElementById("code-licence-2");
+        document.getElementById("code-licence").value = c.value;
+        void verifierCode(c.value.trim().toUpperCase());
+      };
+
+      // Au retour sur l'onglet, on demande à Unity de vérifier immédiatement
+      // si une nouvelle publication a eu lieu pendant l'absence. Couvre le cas
+      // où le navigateur a throttlé les coroutines en arrière-plan.
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden || !window.instanceUnity) return;
+        window.instanceUnity.SendMessage("ContenuLoader", "VerifierMaintenant");
+      });
 
       document.getElementById("bouton-personnage").onclick = function () {
         document.getElementById("panneau-personnage").style.display = "flex";
